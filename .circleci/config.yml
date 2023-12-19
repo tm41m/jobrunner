@@ -15,8 +15,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "${SCOPULI_FINGERPRINT}"
-            - "${SCOPULI_PROD_FINGERPRINT}"
+            - "${JOBRUNNER_FINGERPRINT}"
+            - "${JOBRUNNER_PROD_FINGERPRINT}"
       - run:
           name: Set up SSH forwarding
           command: |
