@@ -1,0 +1,29 @@
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/base:2023.06
+    parameters:
+      ssh:
+        type: string
+        default: "ssh -o StrictHostKeyChecking=no $SCOPULI_RUNNER_SSH_USER@$SCOPULI_RUNNER_SSH_HOST SCOPULI_RUNNER_DIR=$SCOPULI_RUNNER_DIR"
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "${SCOPULI_FINGERPRINT}"
+            - "${SCOPULI_PROD_FINGERPRINT}"
+      - run:
+          name: Update the cron schedule with dbt job definitions
+          command: |
+            << parameters.ssh >> "bash $SCOPULI_RUNNER_DIR/scopuli/scheduler/schedule.sh"
+workflows:
+  deploy-to-prod:
+    jobs:
+      - deploy:
+          context:
+            - aethersphere-prod
+          filters:
+            branches:
+              only: main
