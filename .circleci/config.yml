@@ -15,6 +15,16 @@ jobs:
             - "${SCOPULI_FINGERPRINT}"
             - "${SCOPULI_PROD_FINGERPRINT}"
       - run:
+          name: Set up SSH forwarding
+          command: |
+            echo "Host *" >> ~/.ssh/config
+            echo "  ForwardAgent yes" >> ~/.ssh/config
+            chmod 600 ~/.ssh/config
+      - run:
+          name: Add SSH forwarding
+          command: |
+            eval `ssh-agent -s` && ssh-add -k
+      - run:
           name: Update the cron schedule with dbt job definitions
           command: |
             << parameters.ssh >> "bash $SCOPULI_RUNNER_DIR/scopuli/scheduler/schedule.sh"
