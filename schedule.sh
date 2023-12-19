@@ -12,6 +12,7 @@ cmd_1="0 0 1 */1 * echo 'hello world'"
 temp_file=$(mktemp)
 
 echo "$dbt_run" >> "$temp_file"
+echo "$cmd_1" >> "$temp_file"
 
 # Load the temporary file as the new crontab
 crontab "$temp_file"
