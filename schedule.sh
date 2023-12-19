@@ -5,6 +5,8 @@ crontab -r
 
 # dbt run
 dbt_run="0 0 */2 * * docker run --env-file /home/circleci/.env --network=host --mount type=bind,source=/home/circleci/scopuli/ganymede/,target=/usr/app --mount type=bind,source=/home/circleci/scopuli/,target=/root/.dbt/ ghcr.io/dbt-labs/dbt-postgres:1.5.2 run --target prod"
+cmd_1="0 0 1 */1 * echo 'hello world'"
+
 
 # Create a temporary file to store the cron job entries
 temp_file=$(mktemp)
