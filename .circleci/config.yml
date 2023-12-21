@@ -7,7 +7,7 @@ jobs:
     parameters:
       ssh:
         type: string
-        default: "ssh -o StrictHostKeyChecking=no $SCOPULI_RUNNER_SSH_USER@$SCOPULI_RUNNER_SSH_HOST SCOPULI_RUNNER_DIR=$SCOPULI_RUNNER_DIR"
+        default: "ssh -o StrictHostKeyChecking=no $JOBRUNNER_RUNNER_SSH_USER@$JOBRUNNER_RUNNER_SSH_HOST JOBRUNNER_RUNNER_DIR=$JOBRUNNER_RUNNER_DIR"
       scp:
         type: string
         default: "scp -o StrictHostKeyChecking=no"
@@ -30,11 +30,15 @@ jobs:
       - run:
           name: Pull Latest Head of Main
           command: |
-            << parameters.ssh >> "cd $SCOPULI_RUNNER_DIR/scopuli && git checkout $SCOPULI_ENV && git pull"
+            << parameters.ssh >> "cd $JOBRUNNER_RUNNER_DIR/jobrunner && git checkout main && git pull"
+      - run:
+          name: Pull Latest Head of Aethervest Main
+          command: |
+            << parameters.ssh >> "cd $AETHERVEST_DIR && git clone $AETHERVEST_REPO_SSH && cd $aethervest/ && git checkout main && git pull"
       - run:
           name: Set up server's environment variables
           description: |
-            Sets up the server's environmnet variables. Avoid using ssh to source the variables in this step.
+            Sets up the server's environment variables. Avoid using ssh to source the variables in this step.
             It can cause an exit 255 since the scp command precedes it.
           command: |
             echo "export SCOPULI_PROD_PG_HOST=${SCOPULI_PROD_PG_HOST}" >> .env
@@ -47,7 +51,30 @@ jobs:
       - run:
           name: Update the cron schedule
           command: |
-            << parameters.ssh >> "bash $SCOPULI_RUNNER_DIR/scopuli/scheduler/schedule.sh"
+            << parameters.ssh >> "bash $JOBRUNNER_RUNNER_DIR/jobrunner/schedule.sh"
+      - run: 
+          name: Check crontab
+          commands: |
+            - << parameters.ssh >> 
+            - >
+              if grep -q "0 0 1 */1 * python aethervest/statcan/cpi_monthly_1810000401/loader.py" <<< "crontab -l"; then
+                echo "Monthly CPI loader job found in crontab."
+              else
+                echo "Monthly CPI loader job not found in crontab."
+              fi
+            - >
+              if grep -q "0 0 1 */1 * python aethervest/statcan/food_prices_1810024501/loader.py" <<< "crontab -l"; then
+                echo "Food price loader job found in crontab."
+              else
+                echo "Food price loader job not found in crontab"
+              fi
+  test:
+    steps:
+      - run:
+          name: Test pull request trigger
+          commands:
+            echo "PR opened"
+
 workflows:
   deploy-to-prod:
     jobs:
@@ -57,3 +84,15 @@ workflows:
           filters:
             branches:
               only: main
+  pull-request:
+    jobs:
+      - test:
+          context:
+            - aethersphere-prod
+
+
+# environment variables:
+# - JOBRUNNER_RUNNER_SSH_USER@$JOBRUNNER_RUNNER_SSH_HOST
+# - JOBRUNNER_ENV = main, AETHERVEST_ENV = main
+# - AETHERVEST_DIR = /home/circleci/jobrunner/
+# - AETHERVEST_REPO_SSH = git@github.com:tm41m/aethervest.git
