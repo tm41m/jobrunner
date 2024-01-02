@@ -72,7 +72,7 @@ jobs:
     steps:
       - run:
           name: Test pull request trigger
-          commands:
+          command: |
             echo "PR opened"
 
 workflows:
@@ -87,12 +87,6 @@ workflows:
   pull-request:
     jobs:
       - test:
-          context:
-            - aethersphere-prod
-
-
-# environment variables:
-# - JOBRUNNER_RUNNER_SSH_USER@$JOBRUNNER_RUNNER_SSH_HOST
-# - JOBRUNNER_ENV = main, AETHERVEST_ENV = main
-# - AETHERVEST_DIR = /home/circleci/jobrunner/
-# - AETHERVEST_REPO_SSH = git@github.com:tm41m/aethervest.git
+          pull_requests:
+            types: 
+              - opened
