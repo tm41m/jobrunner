@@ -93,7 +93,5 @@ workflows:
       - deploy:
           filters:
             branches:
-              only: main
+              only: ashannon/jobrunner/dispatch_jobs
 
-
-# asdasd
