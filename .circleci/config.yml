@@ -89,6 +89,10 @@ workflows:
   pull-request:
     jobs:
       - test:
+          filters:
+            branches:
+              ignore:
+                - "*"
           pull_requests:
-            types: 
-              - opened
+            only: 
+              - main
