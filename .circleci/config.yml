@@ -73,9 +73,9 @@ jobs:
       - image: cimg/base:2023.06
     steps:
       - run:
-          name: Test pull request trigger
+          name: Test push to remote main trigger
           command: |
-            echo "PR opened"
+            echo "new commit to main"
 
 workflows:
   deploy-to-prod:
@@ -91,8 +91,8 @@ workflows:
       - test:
           filters:
             branches:
-              only:
-                - main
-          # pull_requests:
-          #   only: 
-          #     - main
+              ignore: /.*/
+          tags:
+            ignore: /.*/
+          pull_requests:
+            ignore: false
