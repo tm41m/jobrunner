@@ -86,7 +86,7 @@ workflows:
           filters:
             branches:
               only: main
-  pull-request:
+  push-to-remote-main:
     jobs:
       - test:
           filters:
