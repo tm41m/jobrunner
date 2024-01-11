@@ -54,26 +54,26 @@ jobs:
             << parameters.ssh >> "bash $JOBRUNNER_RUNNER_DIR/jobrunner/schedule.sh"
       - run: 
           name: Check crontab
-          commands: |
-            - << parameters.ssh >> 
-            - >
-              if grep -q "0 0 1 */1 * python aethervest/statcan/cpi_monthly_1810000401/loader.py" <<< "crontab -l"; then
-                echo "Monthly CPI loader job found in crontab."
-              else
-                echo "Monthly CPI loader job not found in crontab."
-              fi
-            - >
-              if grep -q "0 0 1 */1 * python aethervest/statcan/food_prices_1810024501/loader.py" <<< "crontab -l"; then
-                echo "Food price loader job found in crontab."
-              else
-                echo "Food price loader job not found in crontab"
-              fi
+          command: |
+            << parameters.ssh >> 
+            if grep -q "0 0 1 */1 * python aethervest/statcan/cpi_monthly_1810000401/loader.py" <<< "crontab -l"; then
+              echo "Monthly CPI loader job found in crontab."
+            else
+              echo "Monthly CPI loader job not found in crontab."
+            fi
+            if grep -q "0 0 1 */1 * python aethervest/statcan/food_prices_1810024501/loader.py" <<< "crontab -l"; then
+              echo "Food price loader job found in crontab."
+            else
+              echo "Food price loader job not found in crontab"
+            fi
   test:
+    docker:
+      - image: cimg/base:2023.06
     steps:
       - run:
-          name: Test pull request trigger
-          commands:
-            echo "PR opened"
+          name: Test push to remote main trigger
+          command: |
+            echo "new commit to main"
 
 workflows:
   deploy-to-prod:
@@ -84,15 +84,13 @@ workflows:
           filters:
             branches:
               only: main
-  pull-request:
+  push-to-remote-main:
     jobs:
       - test:
-          context:
-            - aethersphere-prod
-
-
-# environment variables:
-# - JOBRUNNER_RUNNER_SSH_USER@$JOBRUNNER_RUNNER_SSH_HOST
-# - JOBRUNNER_ENV = main, AETHERVEST_ENV = main
-# - AETHERVEST_DIR = /home/circleci/jobrunner/
-# - AETHERVEST_REPO_SSH = git@github.com:tm41m/aethervest.git
+          filters:
+            branches:
+              only: ashannon/jobrunner/dispatch_jobs
+      - deploy:
+          filters:
+            branches:
+              only: main
