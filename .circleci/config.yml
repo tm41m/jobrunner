@@ -30,7 +30,8 @@ jobs:
       - run:
           name: Pull Latest Head of Main
           command: |
-            << parameters.ssh >> "cd $JOBRUNNER_RUNNER_DIR/jobrunner && git checkout main && git pull"
+            echo "$JOBRUNNER_RUNNER_DIR"
+#            < parameters.ssh >> "cd $JOBRUNNER_RUNNER_DIR/jobrunner && git checkout main && git pull"
       - run:
           name: Pull Latest Head of Aethervest Main
           command: |
