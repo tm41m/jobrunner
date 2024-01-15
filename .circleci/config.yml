@@ -28,6 +28,9 @@ jobs:
           command: |
             eval `ssh-agent -s` && ssh-add -k
       - run:
+          name: Print environment vars
+          command: printenv
+      - run:
           name: Pull Latest Head of Main
           command: |
             echo "$JOBRUNNER_RUNNER_DIR"
