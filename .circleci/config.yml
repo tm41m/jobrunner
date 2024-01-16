@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Pull Latest Head of Main
           command: |
-            << parameters.ssh >> "mkdir $JOBRUNNER_DIR/jobrunner cd $JOBRUNNER_DIR/jobrunner && git checkout main && git pull"
+            << parameters.ssh >> "mkdir $JOBRUNNER_DIR/jobrunner && cd $JOBRUNNER_DIR/jobrunner && git checkout main && git pull"
 #      - run:
 #          name: Pull Latest Head of Aethervest Main
 #          command: |
