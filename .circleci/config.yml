@@ -7,7 +7,7 @@ jobs:
     parameters:
       ssh:
         type: string
-        default: "ssh -o StrictHostKeyChecking=no $JOBRUNNER_RUNNER_SSH_USER@$JOBRUNNER_RUNNER_SSH_HOST JOBRUNNER_RUNNER_DIR=$JOBRUNNER_RUNNER_DIR"
+        default: "ssh -o StrictHostKeyChecking=no $JOBRUNNER_SSH_USER@$JOBRUNNER_SSH_HOST JOBRUNNER_DIR=$JOBRUNNER_DIR"
       scp:
         type: string
         default: "scp -o StrictHostKeyChecking=no"
@@ -33,8 +33,8 @@ jobs:
       - run:
           name: Pull Latest Head of Main
           command: |
-            echo "$JOBRUNNER_RUNNER_DIR"
-#            < parameters.ssh >> "cd $JOBRUNNER_RUNNER_DIR/jobrunner && git checkout main && git pull"
+            echo "$JOBRUNNER_DIR"
+#            < parameters.ssh >> "cd $JOBRUNNER_DIR/jobrunner && git checkout main && git pull"
       - run:
           name: Pull Latest Head of Aethervest Main
           command: |
@@ -55,7 +55,7 @@ jobs:
       - run:
           name: Update the cron schedule
           command: |
-            << parameters.ssh >> "bash $JOBRUNNER_RUNNER_DIR/jobrunner/schedule.sh"
+            << parameters.ssh >> "bash $JOBRUNNER_DIR/jobrunner/schedule.sh"
       - run: 
           name: Check crontab
           command: |
