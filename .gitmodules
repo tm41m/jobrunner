@@ -1,0 +1,3 @@
+[submodule "scopuli"]
+	path = scopuli
+	url = git@github.com:tm41m/scopuli.git
