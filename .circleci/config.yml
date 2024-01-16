@@ -33,12 +33,11 @@ jobs:
       - run:
           name: Pull Latest Head of Main
           command: |
-            echo "$JOBRUNNER_DIR"
-#            < parameters.ssh >> "cd $JOBRUNNER_DIR/jobrunner && git checkout main && git pull"
+            << parameters.ssh >> "cd $JOBRUNNER_DIR/jobrunner && git checkout main && git pull"
       - run:
           name: Pull Latest Head of Aethervest Main
           command: |
-            << parameters.ssh >> "cd $AETHERVEST_DIR && git clone $AETHERVEST_REPO_SSH && cd $aethervest/ && git checkout main && git pull"
+#            << parameters.ssh >> "cd $AETHERVEST_DIR && git clone $AETHERVEST_REPO_SSH && cd $aethervest/ && git checkout main && git pull"
       - run:
           name: Set up server's environment variables
           description: |
