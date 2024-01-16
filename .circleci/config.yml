@@ -58,7 +58,7 @@ jobs:
       - run: 
           name: Check crontab
           command: |
-            << parameters.ssh >> "bash crontab -l"
+            << parameters.ssh >> "crontab -l"
 #            if grep -q "0 0 1 */1 * python aethervest/statcan/cpi_monthly_1810000401/loader.py" <<< "crontab -l"; then
 #              echo "Monthly CPI loader job found in crontab."
 #            else
