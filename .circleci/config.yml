@@ -50,7 +50,7 @@ jobs:
       - run:
           name: Display file structure
           command: |
-            "ls"
+            "ls && pwd"
       - run:
           name: Update the cron schedule
           command: |
