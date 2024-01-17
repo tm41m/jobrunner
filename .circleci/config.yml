@@ -7,7 +7,7 @@ jobs:
     parameters:
       ssh:
         type: string
-        default: "ssh -o StrictHostKeyChecking=no $SCOPULI_RUNNER_SSH_USER@$SCOPULI_RUNNER_SSH_HOST SCOPULI_RUNNER_DIR=$SCOPULI_RUNNER_DIR"
+        default: "ssh -o StrictHostKeyChecking=no $JOBRUNNER_SSH_USER@$JOBRUNNER_SSH_HOST JOBRUNNER_DIR=$JOBRUNNER_DIR"
       scp:
         type: string
         default: "scp -o StrictHostKeyChecking=no"
@@ -28,13 +28,16 @@ jobs:
           command: |
             eval `ssh-agent -s` && ssh-add -k
       - run:
+          name: Print environment vars
+          command: printenv
+      - run:
           name: Pull Latest Head of Main
           command: |
-            << parameters.ssh >> "cd $SCOPULI_RUNNER_DIR/scopuli && git checkout $SCOPULI_ENV && git pull"
+            << parameters.ssh >> "cd $JOBRUNNER_DIR/jobrunner && git checkout ashannon/jobrunner/dispatch_jobs && git pull"
       - run:
           name: Set up server's environment variables
           description: |
-            Sets up the server's environmnet variables. Avoid using ssh to source the variables in this step.
+            Sets up the server's environment variables. Avoid using ssh to source the variables in this step.
             It can cause an exit 255 since the scp command precedes it.
           command: |
             echo "export SCOPULI_PROD_PG_HOST=${SCOPULI_PROD_PG_HOST}" >> .env
@@ -47,7 +50,24 @@ jobs:
       - run:
           name: Update the cron schedule
           command: |
-            << parameters.ssh >> "bash $SCOPULI_RUNNER_DIR/scopuli/scheduler/schedule.sh"
+            << parameters.ssh >> "bash $JOBRUNNER_DIR/jobrunner/schedule.sh"
+      - run: 
+          name: List crontab
+          command: |
+            << parameters.ssh >> "crontab -l"
+      - run: 
+          name: Check crontab
+          command: |
+            << parameters.ssh >> "bash $JOBRUNNER_DIR/jobrunner/check_crontab.sh"
+  test:
+    docker:
+      - image: cimg/base:2023.06
+    steps:
+      - run:
+          name: Test push to remote main trigger
+          command: |
+            echo "new commit to main"
+
 workflows:
   deploy-to-prod:
     jobs:
@@ -57,3 +77,16 @@ workflows:
           filters:
             branches:
               only: main
+  push-to-remote-main:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: ashannon/jobrunner/dispatch_jobs
+      - deploy:
+          context:
+            - aethersphere-prod
+          filters:
+            branches:
+              only: ashannon/jobrunner/dispatch_jobs
+
