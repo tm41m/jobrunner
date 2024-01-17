@@ -63,7 +63,7 @@ jobs:
       - run: 
           name: Check crontab
           command: |
-            << parameters.ssh >> "bash $JOBRUNNER_DIR/project/check_crontab.sh"
+            << parameters.ssh >> "bash $JOBRUNNER_DIR/jobrunner/check_crontab.sh"
   test:
     docker:
       - image: cimg/base:2023.06
