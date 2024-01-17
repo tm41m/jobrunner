@@ -5,7 +5,7 @@ target_job="0 0 */2 * * docker run --env-file /home/circleci/.env --network=host
 crontab_content=$(crontab -l)
 
 if [[ $crontab_content == *"$target_job"* ]]; then
-    echo "Correct pathing"
+    echo "dbt job has been scheduled"
 else
-    echo "Error, incorrect pathing"
+    echo "error, dbt job has not been properly scheduled"
 fi
